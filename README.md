@@ -8,11 +8,11 @@ The viewer holds only the images of the comment that you clicked. Move between t
 
 ## Install
 
-The extension is not in the Chrome Web Store yet. Until it is, load it from this folder.
+Install it from the Chrome Web Store: **[Image Viewer for GitHub](https://chromewebstore.google.com/detail/ciejgnmafcdnpabcaiadepcicplllnpj)**.
 
 ### Install from source
 
-There is no build step, so the repository folder **is** the extension folder.
+To run it from source, load it from this folder. There is no build step, so the repository folder **is** the extension folder.
 
 1. Download or clone this repository.
 2. Open `chrome://extensions` in Chrome.

@@ -10,7 +10,8 @@ Everything to paste into the Developer Dashboard, in the order the dashboard ask
 
 ## 0. Before you start
 
-- Store page: none yet. Add the address and the item ID here after the first upload.
+- Store page: https://chromewebstore.google.com/detail/ciejgnmafcdnpabcaiadepcicplllnpj
+- Item ID: `ciejgnmafcdnpabcaiadepcicplllnpj`. The dashboard and the store address use this ID.
 - Dashboard: https://chrome.google.com/webstore/devconsole
 - Upload file: `dist/github-image-viewer-<version>.zip`
 - Google account: the one that owns the other extensions. It needs 2-Step Verification.
