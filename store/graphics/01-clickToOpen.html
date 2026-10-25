@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="storeStyles.css" />
+    <style>
+      .left {
+        position: absolute;
+        left: 80px;
+        top: 70px;
+        width: 470px;
+      }
+      h1 {
+        font-size: 62px;
+        line-height: 1.05;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        margin: 56px 0 18px;
+      }
+      .sub {
+        font-size: 22px;
+        line-height: 1.45;
+        color: #bdc1c6;
+      }
+      .steps {
+        margin-top: 44px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .num {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #4493f8;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 22px;
+        flex: none;
+      }
+      .viewer {
+        position: absolute;
+        left: 600px;
+        top: 150px;
+        width: 620px;
+        border-radius: 14px;
+        overflow: hidden;
+        transform: rotate(1.5deg);
+        box-shadow:
+          0 40px 90px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.1);
+      }
+      .viewer img {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="left">
+      <div class="brand"><img src="../../icons/icon128.png" alt="" />Image Viewer for GitHub</div>
+      <h1>See every image <span class="accent">in place.</span></h1>
+      <p class="sub">Pull requests and issues, without a new tab for each screenshot.</p>
+      <div class="steps">
+        <div class="step"><span class="num">1</span>Click an image in a comment</div>
+        <div class="step"><span class="num">2</span>Move with <kbd>←</kbd> <kbd>→</kbd></div>
+        <div class="step"><span class="num">3</span>Close with <kbd>Esc</kbd></div>
+      </div>
+    </div>
+    <div class="viewer"><img src="screenshots/viewer.png" alt="" /></div>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="storeStyles.css" />
+    <style>
+      .top {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 64px;
+      }
+      h1 {
+        font-size: 58px;
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        margin-top: 34px;
+      }
+      .sub {
+        font-size: 22px;
+        color: #bdc1c6;
+        margin-top: 10px;
+      }
+      .grid {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 330px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+      .tile {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 20px;
+        padding: 26px 28px;
+      }
+      .big {
+        font-size: 54px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--c, #4493f8);
+        letter-spacing: -1px;
+      }
+      .tile h3 {
+        font-size: 22px;
+        margin-top: 12px;
+      }
+      .tile p {
+        font-size: 16px;
+        color: #9aa0a6;
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <div class="brand"><img src="../../icons/icon128.png" alt="" />Image Viewer for GitHub</div>
+      <h1>Light, fast, and <span class="accent">private.</span></h1>
+      <p class="sub">A tiny extension that stays out of your way, and out of your data.</p>
+    </div>
+    <div class="grid">
+      <div class="tile">
+        <div class="big">22 KB</div>
+        <h3>The whole extension</h3>
+        <p>No frameworks and no background process.</p>
+      </div>
+      <div class="tile" style="--c: #66bb6a">
+        <div class="big">0</div>
+        <h3>Data sent anywhere</h3>
+        <p>It shows the image from the address GitHub already uses. No server at all.</p>
+      </div>
+      <div class="tile" style="--c: #ce93d8">
+        <div class="big">0</div>
+        <h3>Accounts or trackers</h3>
+        <p>No sign-up, no analytics, no ads. Install and go.</p>
+      </div>
+      <div class="tile" style="--c: #ffa726">
+        <div class="big">1 site</div>
+        <h3>github.com only</h3>
+        <p>It runs on no other website, and asks for no other permission.</p>
+      </div>
+      <div class="tile" style="--c: #42a5f5">
+        <div class="big">1 comment</div>
+        <h3>At a time</h3>
+        <p>The viewer holds only the images of the comment you clicked.</p>
+      </div>
+      <div class="tile" style="--c: #ef5350">
+        <div class="big">← → Esc</div>
+        <h3>Keyboard first</h3>
+        <p>Move between images and close without the mouse.</p>
+      </div>
+    </div>
+  </body>
+</html>

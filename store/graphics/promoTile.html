@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="storeStyles.css" />
+    <style>
+      html,
+      body {
+        width: 440px;
+        height: 280px;
+      }
+      .wrap {
+        position: absolute;
+        inset: 0;
+        padding: 34px 34px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .brand {
+        font-size: 24px;
+      }
+      .brand img {
+        width: 60px;
+        height: 60px;
+      }
+      h1 {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin-top: 22px;
+        letter-spacing: -0.5px;
+      }
+      .keys {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="brand"><img src="../../icons/icon128.png" alt="" />Image Viewer for GitHub</div>
+      <h1>Every image, <span class="accent">in place.</span></h1>
+      <div class="keys"><kbd>←</kbd><kbd>→</kbd><kbd>Esc</kbd></div>
+    </div>
+  </body>
+</html>

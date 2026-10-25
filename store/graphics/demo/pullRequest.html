@@ -1,0 +1,112 @@
+<!doctype html>
+<!--
+  A made-up pull request page for the store screenshots. It copies only the
+  GitHub markup the extension reads: a comment body with the class
+  `markdown-body`, and each image inside a link to itself.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Add a dark theme to the settings page · Pull Request #42</title>
+    <style>
+      body {
+        margin: 0;
+        font:
+          14px/1.5 'Segoe UI',
+          Roboto,
+          Arial,
+          sans-serif;
+        color: #1f2328;
+        background: #ffffff;
+      }
+      header {
+        height: 64px;
+        background: #f6f8fa;
+        border-bottom: 1px solid #d1d9e0;
+      }
+      main {
+        max-width: 1012px;
+        margin: 24px auto;
+        padding: 0 24px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 400;
+      }
+      h1 span {
+        color: #59636e;
+        font-weight: 300;
+      }
+      .state {
+        display: inline-block;
+        margin: 8px 0 24px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        color: #ffffff;
+        background: #1f883d;
+        font-weight: 600;
+      }
+      .comment {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .avatar {
+        flex: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #8250df;
+      }
+      .box {
+        flex: 1;
+        border: 1px solid #d1d9e0;
+        border-radius: 6px;
+      }
+      .box-header {
+        padding: 8px 16px;
+        border-bottom: 1px solid #d1d9e0;
+        background: #f6f8fa;
+        color: #59636e;
+      }
+      .markdown-body {
+        padding: 16px;
+      }
+      .markdown-body img {
+        max-width: 100%;
+        width: 280px;
+        border: 1px solid #d1d9e0;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <h1>Add a dark theme to the settings page <span>#42</span></h1>
+      <div class="state">Open</div>
+      <div class="comment">
+        <div class="avatar"></div>
+        <div class="box">
+          <div class="box-header"><b>octo-designer</b> commented</div>
+          <div class="markdown-body">
+            <p>The settings page now follows the system theme. Before, after, and the first numbers:</p>
+            <p>
+              <a href="settingsLight.svg"><img src="settingsLight.svg" alt="Settings page, light theme" /></a>
+              <a href="settingsDark.svg"><img src="settingsDark.svg" alt="Settings page, dark theme" /></a>
+              <a href="usageChart.svg"><img src="usageChart.svg" alt="Dark mode adoption over eight weeks" /></a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="comment">
+        <div class="avatar" style="background: #bf8700"></div>
+        <div class="box">
+          <div class="box-header"><b>octo-reviewer</b> commented</div>
+          <div class="markdown-body"><p>Looks good to me. The toggle could use more contrast in the dark theme.</p></div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

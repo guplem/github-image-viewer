@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" font-family="Segoe UI, Roboto, Arial, sans-serif">
+  <rect width="1600" height="1000" fill="#f6f8fa"/>
+  <rect width="1600" height="88" fill="#ffffff"/>
+  <rect y="88" width="1600" height="2" fill="#d1d9e0"/>
+  <circle cx="72" cy="44" r="22" fill="#0969da"/>
+  <text x="112" y="56" font-size="32" font-weight="600" fill="#1f2328">Acme Notes</text>
+  <rect x="64" y="140" width="360" height="800" rx="16" fill="#ffffff" stroke="#d1d9e0" stroke-width="2"/>
+  <rect x="88" y="168" width="312" height="56" rx="10" fill="#ddf4ff"/>
+  <text x="112" y="206" font-size="26" font-weight="600" fill="#0969da">Appearance</text>
+  <text x="112" y="276" font-size="26" fill="#59636e">Account</text>
+  <text x="112" y="336" font-size="26" fill="#59636e">Notifications</text>
+  <text x="112" y="396" font-size="26" fill="#59636e">Privacy</text>
+  <rect x="472" y="140" width="1064" height="800" rx="16" fill="#ffffff" stroke="#d1d9e0" stroke-width="2"/>
+  <text x="520" y="216" font-size="44" font-weight="600" fill="#1f2328">Appearance</text>
+  <text x="520" y="268" font-size="26" fill="#59636e">Choose how Acme Notes looks to you.</text>
+  <rect x="520" y="320" width="300" height="200" rx="14" fill="#ffffff" stroke="#0969da" stroke-width="5"/>
+  <rect x="544" y="344" width="252" height="24" rx="6" fill="#d1d9e0"/>
+  <rect x="544" y="384" width="180" height="24" rx="6" fill="#eaeef2"/>
+  <text x="520" y="568" font-size="26" font-weight="600" fill="#1f2328">Light</text>
+  <rect x="856" y="320" width="300" height="200" rx="14" fill="#0d1117" stroke="#d1d9e0" stroke-width="3"/>
+  <rect x="880" y="344" width="252" height="24" rx="6" fill="#3d444d"/>
+  <rect x="880" y="384" width="180" height="24" rx="6" fill="#262c36"/>
+  <text x="856" y="568" font-size="26" fill="#59636e">Dark</text>
+  <rect x="520" y="640" width="968" height="2" fill="#d1d9e0"/>
+  <text x="520" y="712" font-size="28" fill="#1f2328">Follow the system theme</text>
+  <rect x="1368" y="684" width="96" height="48" rx="24" fill="#d1d9e0"/>
+  <circle cx="1392" cy="708" r="18" fill="#ffffff"/>
+  <text x="520" y="812" font-size="28" fill="#1f2328">Compact layout</text>
+  <rect x="1368" y="784" width="96" height="48" rx="24" fill="#1f883d"/>
+  <circle cx="1440" cy="808" r="18" fill="#ffffff"/>
+</svg>
