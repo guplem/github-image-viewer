@@ -54,6 +54,14 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   /* A transparent PNG stays readable on the dark backdrop. */
   background: #ffffff;
+  /* The script moves and scales the image with a transform; the browser must not pan, select, or drag it. */
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.image.dragging {
+  cursor: grabbing;
 }
 
 .button {
@@ -109,6 +117,9 @@
 }
 
 .panel {
+  /* A zoomed image can cover the panel; the panel stays on top so that its text stays readable. */
+  position: relative;
+  z-index: 1;
   flex: none;
   width: min(720px, 100% - 32px);
   margin: 0 auto 16px;
@@ -125,9 +136,25 @@
   gap: 16px;
 }
 
+.status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
 .position {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+.zoom {
+  color: #9198a1;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom[hidden] {
+  display: none;
 }
 
 .original {

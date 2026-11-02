@@ -5,9 +5,13 @@
  *
  * Every piece of page text goes in through `textContent`, never `innerHTML`:
  * the alt text and the address come from a comment that anyone can write.
+ *
+ * The mouse wheel zooms at the cursor, a drag moves the image freely, and a
+ * double click zooms in or goes back to the fitted view.
  */
 
 import { describeImageFile, formatImageFacts, formatPosition, stepIndex } from './imageDetails.js';
+import { RESTING_VIEW, formatZoom, isResting, panBy, toggleZoomAt, wheelZoomFactor, zoomAt } from './imageZoom.js';
 
 /**
  * @typedef {object} ViewerImage
@@ -17,6 +21,11 @@ import { describeImageFile, formatImageFacts, formatPosition, stepIndex } from '
  */
 
 const HOST_ID = 'github-image-viewer-host';
+
+/** A pointer that moves less than this between press and release is a click, not a drag. */
+const DRAG_THRESHOLD_PX = 4;
+/** The zoom step of the `+` and `-` keys. */
+const KEY_ZOOM_FACTOR = 1.25;
 
 /** Octicon paths (16 by 16): x, chevron-left, chevron-right, link-external. */
 const ICON_PATHS = {
@@ -39,7 +48,8 @@ export function createImageViewer(styleSheet) {
   const root = host.attachShadow({ mode: 'open' });
   root.adoptedStyleSheets = [styleSheet];
 
-  const image = createElement('img', { className: 'image' });
+  // `draggable="false"` stops the browser drag of the image, which would fight the pan.
+  const image = createElement('img', { className: 'image', attributes: { draggable: 'false' } });
   const stage = createElement('div', { className: 'stage' }, [image]);
   const closeButton = createIconButton('close', 'Close (Esc)', () => close());
   const previousButton = createIconButton('previous', 'Previous image (Left arrow)', () =>
@@ -47,6 +57,7 @@ export function createImageViewer(styleSheet) {
   );
   const nextButton = createIconButton('next', 'Next image (Right arrow)', () => show(stepIndex(index, 1, images.length)));
   const position = createElement('span', { className: 'position' });
+  const zoomLevel = createElement('span', { className: 'zoom', attributes: { title: 'Double-click or press 0 to fit' } });
   const altText = createElement('p', { className: 'alt' });
   const facts = createElement('p', { className: 'facts' });
   const originalLink = createElement('a', {
@@ -56,7 +67,10 @@ export function createImageViewer(styleSheet) {
   });
   originalLink.prepend(createIcon('external'));
   const panel = createElement('div', { className: 'panel' }, [
-    createElement('div', { className: 'panel-row' }, [position, originalLink]),
+    createElement('div', { className: 'panel-row' }, [
+      createElement('span', { className: 'status' }, [position, zoomLevel]),
+      originalLink,
+    ]),
     altText,
     facts,
   ]);
@@ -73,15 +87,98 @@ export function createImageViewer(styleSheet) {
   let images = [];
   let index = 0;
   let previousOverflow = '';
+  /** @type {import('./imageZoom.js').ZoomView} */
+  let view = { ...RESTING_VIEW };
+  /** @type {{ pointerId: number, lastX: number, lastY: number, startX: number, startY: number } | null} */
+  let drag = null;
+  // A drag that ends outside the image must not count as a click outside the image, which closes the viewer.
+  let dragMoved = false;
 
   // A click on the dark area around the image closes the viewer. The image, the buttons, and the panel keep their clicks.
   dialog.addEventListener('click', (event) => {
+    if (dragMoved) {
+      dragMoved = false;
+      return;
+    }
     if (event.target === dialog || event.target === stage) close();
   });
+  dialog.addEventListener('pointerdown', () => {
+    dragMoved = false;
+  });
+  // `passive: false` lets the listener stop the page scroll that the wheel would start.
+  dialog.addEventListener(
+    'wheel',
+    (event) => {
+      event.preventDefault();
+      if (!image.getAttribute('src')) return;
+      const [pointX, pointY] = pointFromCenter(event);
+      setView(zoomAt(view, wheelZoomFactor(event.deltaY, event.deltaMode), pointX, pointY));
+    },
+    { passive: false },
+  );
+  image.addEventListener('dblclick', (event) => {
+    event.preventDefault();
+    const [pointX, pointY] = pointFromCenter(event);
+    setView(toggleZoomAt(view, pointX, pointY));
+  });
+  image.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    image.setPointerCapture(event.pointerId);
+    drag = {
+      pointerId: event.pointerId,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+    image.classList.add('dragging');
+  });
+  image.addEventListener('pointermove', (event) => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    setView(panBy(view, event.clientX - drag.lastX, event.clientY - drag.lastY));
+    drag.lastX = event.clientX;
+    drag.lastY = event.clientY;
+    if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) >= DRAG_THRESHOLD_PX) dragMoved = true;
+  });
+  image.addEventListener('pointerup', endDrag);
+  image.addEventListener('pointercancel', endDrag);
   image.addEventListener('load', () => renderFacts());
   image.addEventListener('error', () => {
     facts.textContent = 'The image did not load.';
   });
+
+  /** @param {PointerEvent} event */
+  function endDrag(event) {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    drag = null;
+    image.classList.remove('dragging');
+  }
+
+  /**
+   * The cursor, relative to the image center before the transform, which is what `imageZoom.js` expects.
+   * @param {MouseEvent} event
+   * @returns {[number, number]}
+   */
+  function pointFromCenter(event) {
+    // The scale keeps the center in place, so the transform moves the center only by the offset.
+    const box = image.getBoundingClientRect();
+    return [event.clientX - (box.left + box.width / 2 - view.x), event.clientY - (box.top + box.height / 2 - view.y)];
+  }
+
+  /** @param {import('./imageZoom.js').ZoomView} nextView */
+  function setView(nextView) {
+    view = nextView;
+    const resting = isResting(view);
+    image.style.transform = resting ? '' : `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+    zoomLevel.textContent = resting ? '' : formatZoom(view.scale);
+    zoomLevel.hidden = resting;
+  }
+
+  /** @param {number} factor */
+  function zoomAtCenter(factor) {
+    setView(zoomAt(view, factor, 0, 0));
+  }
 
   /** @param {KeyboardEvent} event */
   function onKeyDown(event) {
@@ -96,6 +193,15 @@ export function createImageViewer(styleSheet) {
     } else if (event.key === 'ArrowRight' && images.length > 1) {
       event.preventDefault();
       show(stepIndex(index, 1, images.length));
+    } else if (event.key === '+' || event.key === '=') {
+      event.preventDefault();
+      zoomAtCenter(KEY_ZOOM_FACTOR);
+    } else if (event.key === '-') {
+      event.preventDefault();
+      zoomAtCenter(1 / KEY_ZOOM_FACTOR);
+    } else if (event.key === '0') {
+      event.preventDefault();
+      setView({ ...RESTING_VIEW });
     } else if (event.key === 'Tab') {
       event.preventDefault();
       moveFocus(event.shiftKey ? -1 : 1);
@@ -119,6 +225,9 @@ export function createImageViewer(styleSheet) {
     if (!current) return;
     index = nextIndex;
 
+    drag = null;
+    image.classList.remove('dragging');
+    setView({ ...RESTING_VIEW });
     image.src = current.src;
     image.alt = current.alt;
     position.textContent = formatPosition(index, images.length);
