@@ -1,0 +1,97 @@
+name: Release
+
+# After the checks pass on main, this workflow publishes a GitHub release when a commit since the
+# last one changes the extension. The commit types pick the version (scripts/release/releaseVersion.js).
+# The release holds the zip to upload to the Chrome Web Store. Releases come only from here.
+#
+# GitHub starts no workflow for a push made with the GITHUB_TOKEN. So a merge must come from a
+# person's login (a merge button, or `gh pr merge --auto --merge`), never from a workflow token.
+on:
+  workflow_run:
+    workflows: ['Pull request checks']
+    types: [completed]
+    branches: [main]
+  # A retry by hand, for example after a failed run.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One release at a time, so that two runs never pick the same version. A newer waiting run
+# can replace an older one and lose nothing: it reads every commit since the last release.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      # Check out main by name, so that no step runs code from a commit that an event names.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Release only the tip of main, and only when its checks passed
+        id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          sha="$(git rev-parse HEAD)"
+          # The run for the newer commit releases this commit too.
+          if [ -n "$TRIGGER_SHA" ] && [ "$TRIGGER_SHA" != "$sha" ]; then
+            echo "main moved on from $TRIGGER_SHA. The run for $sha releases it."
+            exit 0
+          fi
+          conclusion="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "Pull request checks" --event push \
+            --commit "$sha" --limit 1 --json conclusion --jq '.[0].conclusion')"
+          if [ "$conclusion" != "success" ]; then
+            echo "The checks on $sha did not pass (${conclusion:-no run}). Nothing to release."
+            exit 0
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: steps.commit.outputs.sha != ''
+        with:
+          node-version: 22
+
+      - name: Pick the version and write the notes
+        id: next
+        if: steps.commit.outputs.sha != ''
+        run: node scripts/release/nextRelease.js "$RUNNER_TEMP/release-notes.md"
+
+      # Chrome reads the version from manifest.json. Only the zip gets the new number: main keeps its own.
+      - name: Build the zip
+        if: steps.next.outputs.version != ''
+        env:
+          VERSION: ${{ steps.next.outputs.version }}
+        run: |
+          node -e 'const fs = require("node:fs"); const json = JSON.parse(fs.readFileSync("manifest.json", "utf8"));
+          json.version = process.env.VERSION; fs.writeFileSync("manifest.json", JSON.stringify(json, null, 2) + "\n");'
+          mkdir -p dist
+          # The same files as scripts/packageExtension.ps1: only what Chrome loads. `zip` writes `/` in entry names.
+          zip -r -X -9 "dist/github-image-viewer-$VERSION.zip" manifest.json src icons
+          unzip -p "dist/github-image-viewer-$VERSION.zip" manifest.json | grep -F "\"version\": \"$VERSION\""
+          ls -l dist
+
+      # A draft stays hidden until the zip is in it.
+      - name: Publish the release
+        if: steps.next.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.next.outputs.version }}
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          gh release create "$TAG" dist/*.zip --repo "$GITHUB_REPOSITORY" --draft \
+            --target "$SHA" --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
