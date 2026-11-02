@@ -48,13 +48,14 @@ HOW IT WORKS
 
 1. Open a pull request or an issue on github.com.
 2. Click an image in the description or in a comment.
-3. Move with the left and right arrow keys. Close with Esc.
+3. Move with the left and right arrow keys. Zoom with the mouse wheel, and drag to move the image. Close with Esc.
 
 FEATURES
 • Opens in place: no new tab, and the page does not scroll away.
 • One comment at a time: the viewer holds only the images of the comment that you clicked, and shows where you are, such as 3 / 7.
 • The details that matter: the alt text, the size in pixels, the format, and the file name of each image.
-• Keyboard first: left and right arrows to move, Esc to close. On-screen arrows and a close button do the same.
+• Zoom and pan: the mouse wheel zooms at the cursor, a drag moves the image freely, and a double click fits it back to the screen.
+• Keyboard first: left and right arrows to move, + and - to zoom, Esc to close. On-screen arrows and a close button do the same.
 • Stays out of the way: a click with Ctrl, Shift, or the middle button still opens the image the normal way, and a badge that links to another page keeps its link.
 • Works with GitHub's fast page changes and with comments that appear after the page loads.
 
@@ -62,7 +63,7 @@ PRIVATE BY DESIGN
 • No permissions. It runs on github.com only.
 • It shows the image from the same GitHub address that the page already uses. It contacts no other server.
 • No account, no analytics, no ads, and no tracking. It stores nothing.
-• The whole extension is about 22 KB.
+• The whole extension is about 23 KB.
 
 Open source: https://github.com/guplem/github-image-viewer
 

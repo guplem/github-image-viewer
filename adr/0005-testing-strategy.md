@@ -12,6 +12,7 @@ The rest is different. Which pages count, which links are image links, and what 
 
 - `githubPages.js` is pure and fully tested: `isConversationPath` and `isImageLink`.
 - `imageDetails.js` is pure and fully tested: the position text, the wrap-around step, the pixel size, the file name and format of an address (including a camo proxy address and a `data:` address), and the facts line.
+- `imageZoom.js` is pure and fully tested: the zoom at the cursor and its limits, the free pan, the wheel step, the double-click toggle, and the zoom text.
 
 **Exempt from unit tests:** `contentBootstrap.js`, `contentEntry.js`, `commentImages.js`, and `imageViewer.js`. Keep them thin. They read the page, call a pure function, and draw the result. When a bug appears in one of them, move the decision that failed into a pure function and test that, rather than test the file.
 
@@ -22,9 +23,10 @@ The manual run is short and always the same:
 1. Load the extension unpacked, and open a pull request and an issue with several images in one comment.
 2. Click an image. The viewer opens, the address does not change, and no tab opens.
 3. Check the position (`2 / 3`), the alt text, the size, and the format. Press the left and right arrow keys, and use the on-screen arrows.
-4. Close with `Esc`, with the close button, and with a click outside the image.
-5. Open the pull request from the pull request list, without a reload, and click an image again.
-6. Click a GIF, and a badge that links to another page. The GIF counts once; the badge link still works.
+4. Zoom with the mouse wheel; the point under the cursor stays in place. Drag the image, and release the button outside the image; the viewer stays open. Double-click, then press `0`; the image fits the screen again.
+5. Close with `Esc`, with the close button, and with a click outside the image.
+6. Open the pull request from the pull request list, without a reload, and click an image again.
+7. Click a GIF, and a badge that links to another page. The GIF counts once; the badge link still works.
 
 **Rejected alternative:** jsdom tests for `commentImages.js`. The test markup would be a copy of today's GitHub markup, written by hand, so a green test would prove nothing about the real page.
 
