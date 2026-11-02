@@ -53,7 +53,8 @@ Both layers cover prose only. Neither covers code identifiers or text you quote 
 | Check the format only                  | `npm run format:check`                                                   | Fix a failure with `npm run format`.                                                           |
 | Type check                             | `npm run typecheck`                                                      | `tsc --noEmit` over the JSDoc types. Success prints nothing.                                   |
 | Run the tests                          | `npm test`                                                               | `node --test`. It finds `test/*.test.js` on its own.                                           |
-| Build the Web Store zip                | `powershell -ExecutionPolicy Bypass -File scripts/packageExtension.ps1`  | Windows only. Writes `dist/github-image-viewer-<version>.zip` with only the files Chrome uses. |
+| Build the Web Store zip by hand        | `powershell -ExecutionPolicy Bypass -File scripts/packageExtension.ps1`  | Windows only. Writes `dist/github-image-viewer-<version>.zip` with only the files Chrome uses. |
+| Preview the next release version       | `node scripts/release/nextRelease.js <notes file>`                       | Prints the version that the release workflow would pick, and writes its notes.                 |
 | Render the Web Store images            | `powershell -ExecutionPolicy Bypass -File scripts/renderStoreImages.ps1` | Windows only, needs Google Chrome. Renders `store/graphics/*.html` to `store/images/`.         |
 | Redraw the icons                       | `powershell -ExecutionPolicy Bypass -File scripts/makeIcons.ps1`         | Windows only. Run it only when the artwork changes.                                            |
 
@@ -78,18 +79,19 @@ The extension is one content script in the isolated world of every `github.com` 
 
 ### File map
 
-| File                                | Holds                                                                                                   |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `src/bootstrap/contentBootstrap.js` | The classic script in the manifest. Imports `contentEntry.js`, nothing else.                            |
-| `src/contentEntry.js`               | Wiring only. The click listener, the stylesheet load, and the close on page change.                     |
-| `src/github/githubPages.js`         | Which paths are conversations, and which links only open an image. **All address knowledge here.**      |
-| `src/github/commentImages.js`       | Which images belong to one comment. **The only file that knows GitHub's markup.**                       |
-| `src/viewer/imageDetails.js`        | Position, wrap-around step, pixel size, file name, and format. Pure logic.                              |
-| `src/viewer/imageZoom.js`           | Zoom at the cursor, free pan, wheel step, double-click toggle, and zoom text. Pure logic.               |
-| `src/viewer/imageViewer.js`         | The viewer in its shadow root: buttons, keys, focus, scroll lock, wheel zoom, and drag.                 |
-| `src/viewer/imageViewer.css`        | The viewer styles. Always dark, in both GitHub themes.                                                  |
-| `store/listing.md`                  | Every text of the Chrome Web Store listing, field by field.                                             |
-| `store/graphics/`, `store/images/`  | The store images: HTML sources, the demo pull request with its images, and the rendered PNGs to upload. |
+| File                                | Holds                                                                                                                            |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `src/bootstrap/contentBootstrap.js` | The classic script in the manifest. Imports `contentEntry.js`, nothing else.                                                     |
+| `src/contentEntry.js`               | Wiring only. The click listener, the stylesheet load, and the close on page change.                                              |
+| `src/github/githubPages.js`         | Which paths are conversations, and which links only open an image. **All address knowledge here.**                               |
+| `src/github/commentImages.js`       | Which images belong to one comment. **The only file that knows GitHub's markup.**                                                |
+| `src/viewer/imageDetails.js`        | Position, wrap-around step, pixel size, file name, and format. Pure logic.                                                       |
+| `src/viewer/imageZoom.js`           | Zoom at the cursor, free pan, wheel step, double-click toggle, and zoom text. Pure logic.                                        |
+| `src/viewer/imageViewer.js`         | The viewer in its shadow root: buttons, keys, focus, scroll lock, wheel zoom, and drag.                                          |
+| `src/viewer/imageViewer.css`        | The viewer styles. Always dark, in both GitHub themes.                                                                           |
+| `scripts/release/`                  | The release version and notes from the commits (`releaseVersion.js`, pure logic), and the script that the release workflow runs. |
+| `store/listing.md`                  | Every text of the Chrome Web Store listing, field by field.                                                                      |
+| `store/graphics/`, `store/images/`  | The store images: HTML sources, the demo pull request with its images, and the rendered PNGs to upload.                          |
 
 ## Rules
 
@@ -100,7 +102,7 @@ The extension is one content script in the isolated world of every `github.com` 
 - **Put page text into the viewer with `textContent` and attributes only.** Anyone can write a comment. Never use `innerHTML`.
 - **Keep `chrome.*` and the DOM out of `githubPages.js`, `imageDetails.js`, and `imageZoom.js`.** `contentEntry.js` and `contentBootstrap.js` are the only files that call `chrome.*`.
 - **Keep the viewer inside its shadow root on `<html>`.** See `adr/0004-viewer-in-a-shadow-root.md`.
-- **Keep the store listing true.** `store/listing.md` and the store images state facts about the code: the site, the absence of permissions, the keys, and the zip size ("23 KB"). Update them in the same change as the code. Re-render the images with `renderStoreImages.ps1`. A false claim can get the extension rejected at review.
+- **Keep the store listing true.** `store/listing.md` and the store images state facts about the code: the site, the absence of permissions, the keys, and the zip size ("26 KB", the zip that the release workflow builds). Update them in the same change as the code. Re-render the images with `renderStoreImages.ps1`. A false claim can get the extension rejected at review.
 
 ## Gotchas
 
@@ -123,7 +125,7 @@ Develop new behavior **test-first, red-green**: write a failing test that pins t
 
 What is testable here, and what is not:
 
-- **Testable, and always test-first:** which paths are conversations and which links are image links (`githubPages.js`), every text the viewer shows about an image (`imageDetails.js`), and every zoom and pan step (`imageZoom.js`).
+- **Testable, and always test-first:** which paths are conversations and which links are image links (`githubPages.js`), every text the viewer shows about an image (`imageDetails.js`), every zoom and pan step (`imageZoom.js`), and the release version and notes (`scripts/release/releaseVersion.js`).
 - **Exempt, because a unit test would only restate the code:** `contentBootstrap.js`, `contentEntry.js`, `commentImages.js`, and `imageViewer.js`. Keep these thin: an adapter reads the page, calls a pure function, and draws the result.
 - **The safety net for the exempt parts** is the type check (`npm run typecheck` reads every file) plus one manual run in Chrome. `adr/0005-testing-strategy.md` records this split and the steps of the manual run.
 
@@ -136,7 +138,10 @@ The gate: CI runs the checks on every PR and on every push to `main`.
 - Branch from `main`, PR back to `main`. Whenever you create a branch, use the `create-branch` skill.
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`. Whenever you commit, use the `write-commit` skill.
 - CI runs the repo's checks (the Commands table) on every PR and on every push to `main`.
-- **The merge gate is not set up yet.** The sister extensions use a ruleset "Requirements for merge" that requires the `checks` check, plus "Allow auto-merge" in the repository settings. This repo has neither yet, so `.github/workflows/auto-merge.yml` fails until "Allow auto-merge" is on. Once both exist, PRs merge automatically on a green `checks` check: there is no human review gate, the tests are the review, which is what makes the TDD protocol non-negotiable.
+- Merge with `gh pr merge --auto --merge` (or the `enable_pr_auto_merge` GitHub tool), with the user's own login. Never merge with a workflow token: GitHub starts no workflow for its push, so no release follows.
+- After the checks pass on a push to `main`, `.github/workflows/release.yml` publishes a GitHub release with the store zip. The commit prefixes pick the version: `feat` raises the middle number, and `fix`, `refactor`, and an unknown subject the last one. Mark a breaking change with `!`. `docs`, `test`, `chore`, `ci`, and `style` make no release. See `adr/0006-release-on-merge.md`.
+- Never push a `v*` tag by hand. To set the next version by hand, such as `1.0.0`, raise `version` in `manifest.json`. The next release uses it.
+- **The merge gate is not set up yet.** The sister extensions use a ruleset "Requirements for merge" that requires the `checks` check. Without it, auto-merge merges a PR at once, before its checks finish. A failed check on `main` then only stops the release. With the ruleset, there is no human review gate: the tests are the review, which is what makes the TDD protocol non-negotiable.
 - Three layers enforce quality, and they overlap on purpose: the Claude Code hooks in `.claude/settings.json` run while you edit, the lefthook `pre-commit` hook runs the format and type checks when anyone commits, and CI runs the same checks on GitHub.
 
 ## Documentation Organization
@@ -174,6 +179,7 @@ ADRs live in `adr/`. Each records one architectural decision or cross-cutting st
 | `0003-plain-javascript-with-jsdoc-types.md`       | JSDoc types checked by `tsc`, a classic bootstrap that imports ES modules, no build step                 |
 | `0004-viewer-in-a-shadow-root.md`                 | The viewer in an open shadow root on `<html>`, with its stylesheet read from the package                 |
 | `0005-testing-strategy.md`                        | Address and text logic is test-first; DOM files are exempt and covered by types and a manual run         |
+| `0006-release-on-merge.md`                        | A GitHub release with the store zip after each merge to `main`; commit prefixes pick the version         |
 
 ## GitHub issues, PRs, and other artifacts
 

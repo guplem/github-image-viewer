@@ -2,7 +2,7 @@
 
 Everything to paste into the Developer Dashboard, in the order the dashboard asks for it. Keep it true: when a feature, the site access, or the size changes, update this file and the images in the same change.
 
-- The upload zip: build it with `scripts/packageExtension.ps1`. It lands in `dist/`.
+- The upload zip: download it from the latest GitHub release, which the release workflow builds after each merge. On Windows, `scripts/packageExtension.ps1` also builds it into `dist/`.
 - The images: `store/images/`. Their sources are the HTML pages in `store/graphics/`. Render them again with `scripts/renderStoreImages.ps1`.
 - `store/graphics/screenshots/viewer.png` is a capture of the real viewer on `store/graphics/demo/pullRequest.html`, a made-up pull request with made-up images. To capture it again, serve that page at a `https://github.com/<owner>/<repo>/pull/<number>` address (for example with Playwright request routing), load the extension unpacked, click the second image, and take a 1280×800 screenshot.
 
@@ -63,7 +63,7 @@ PRIVATE BY DESIGN
 • No permissions. It runs on github.com only.
 • It shows the image from the same GitHub address that the page already uses. It contacts no other server.
 • No account, no analytics, no ads, and no tracking. It stores nothing.
-• The whole extension is about 23 KB.
+• The whole extension is about 26 KB.
 
 Open source: https://github.com/guplem/github-image-viewer
 

@@ -69,16 +69,19 @@ The full policy for the Chrome Web Store is in [`PRIVACY.md`](PRIVACY.md).
 
 ## Publish to the Chrome Web Store
 
-1. Raise `version` in `manifest.json` (and in `package.json`, to keep them equal).
-2. Build the upload zip. It holds only the files that Chrome uses:
-   ```bash
-   powershell -ExecutionPolicy Bypass -File scripts/packageExtension.ps1
-   ```
-   The zip lands in `dist/github-image-viewer-<version>.zip`.
-3. Open the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole).
-4. Press **New item** and upload the zip. For an update, open the item and upload the new zip in **Package**.
-5. Fill in the **Store listing**, **Privacy**, and **Distribution** tabs. [`store/listing.md`](store/listing.md) holds every text to paste, field by field, including the reason for the site access and the privacy policy link. The images to upload are in `store/images/`.
-6. Submit for review.
+Each merge to `main` that changes the extension makes a new [GitHub release](https://github.com/guplem/github-image-viewer/releases). The release holds the zip to upload, `github-image-viewer-<version>.zip`, with only the files that Chrome uses. The commit prefixes pick the version: `feat` raises the middle number, `fix` the last one, and `!` (such as `feat!:`) the first one. A change to the docs or the tests makes no release.
+
+1. Wait for the release of your merge, then download its zip.
+2. Open the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole).
+3. Press **New item** and upload the zip. For an update, open the item and upload the new zip in **Package**.
+4. Fill in the **Store listing**, **Privacy**, and **Distribution** tabs. [`store/listing.md`](store/listing.md) holds every text to paste, field by field, including the reason for the site access and the privacy policy link. The images to upload are in `store/images/`.
+5. Submit for review.
+
+To set the next version by hand, such as `1.0.0`, raise `version` in `manifest.json` before the merge. On Windows, you can also build the zip yourself:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/packageExtension.ps1
+```
 
 The store images are rendered from HTML pages in `store/graphics/`. After you change one, render them again (Windows, needs Google Chrome):
 
