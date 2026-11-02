@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Image Viewer for GitHub",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Click an image in a GitHub pull request or issue to open it in a floating viewer. Arrow keys move between the comment's images.",
   "minimum_chrome_version": "111",
   "icons": {

@@ -2,7 +2,7 @@
 
 A Chrome extension for GitHub pull requests and issues. Click an image in a comment, and it opens in a viewer on top of the page. No new tab opens, and the page stays where it was.
 
-The viewer holds only the images of the comment that you clicked. Move between them with the arrow keys, and read the alt text, the size in pixels, and the format of each one. Nothing leaves your browser.
+The viewer holds only the images of the comment that you clicked. Move between them with the arrow keys, zoom in with the mouse wheel, and read the alt text, the size in pixels, and the format of each one. Nothing leaves your browser.
 
 ![the icon: a framed photo between a left and a right arrow](icons/icon128.png)
 
@@ -27,7 +27,12 @@ Chrome keeps the extension until you remove it. After you pull a new version, pr
 1. Open a pull request or an issue on `github.com`.
 2. Click an image in the description or in a comment. The viewer opens.
 3. Move to the previous or the next image of that comment with `←` and `→`, or with the arrows at the sides.
-4. Close the viewer with `Esc`, with the `×` button, or with a click outside the image.
+4. Zoom in and out with the mouse wheel. The point under the cursor stays in place.
+5. Drag the image to move it anywhere on the screen.
+6. Double-click the image to zoom in to 200% at that point. Double-click again to fit the image back to the screen. The `+`, `-`, and `0` keys do the same from the keyboard.
+7. Close the viewer with `Esc`, with the `×` button, or with a click outside the image.
+
+The next or the previous image always opens fitted to the screen.
 
 The panel under the image shows:
 
